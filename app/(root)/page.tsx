@@ -1,4 +1,5 @@
 import LocalSearch from "@/components/search/LocalSearch";
+import HomeFilter from "@/components/filters/HomeFilter";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import Link from "next/link";
@@ -11,7 +12,7 @@ const questions = [
     description: "I want ot learn react, can you help me?",
     tags: [
       { _id: "1", name: "React" },
-      { _id: "2", name: "JS" },
+      { _id: "2", name: "JavaScript" },
     ],
     author: {
       _id: "1",
@@ -24,11 +25,11 @@ const questions = [
   },
   {
     _id: "2",
-    title: "How to learn Nextjs?",
-    description: "I want ot learn Nextjs, can you help me?",
+    title: "How to learn JavaScript?",
+    description: "I want ot learn JavaScript, can you help me?",
     tags: [
-      { _id: "1", name: "Nextjs" },
-      { _id: "2", name: "JS" },
+      { _id: "1", name: "JavaScript" },
+      { _id: "2", name: "JavaScript" },
     ],
     author: {
       _id: "2",
@@ -46,11 +47,17 @@ interface SearchParams {
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-  const { query = "" } = await searchParams;
+  const { query = "", filter = '' } = await searchParams;
 
-  const filteredQuestions = questions.filter((question) =>
-    question.title.toLowerCase().includes(query?.toLowerCase())
-  );
+  const filteredQuestions = questions.filter((question) => {
+    const matchesQuery = question.title
+      .toLowerCase()
+      .includes(query?.toLowerCase());
+    const matchesFilter = filter
+    ? question.tags[0].name.toLowerCase() === filter.toLowerCase()
+      : true;
+    return matchesQuery && matchesFilter;
+  });
 
   return (
     <>
@@ -72,7 +79,7 @@ const Home = async ({ searchParams }: SearchParams) => {
           otherClasses="flex-1"
         />
       </section>
-      {/* HomeFilter */}
+      <HomeFilter />
       <div className="mt-11 flex w-full flex-col gap-6">
         {filteredQuestions.map((question) => (
           <h1 key={question._id}>{question.title}</h1>
